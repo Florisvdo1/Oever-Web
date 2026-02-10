@@ -609,34 +609,33 @@ function About() {
 
 // ─── Contact Form ───
 function Contact() {
-  const [formState, setFormState] = useState({ name: "", email: "", type: "commission", message: "", budget: "", _gotcha: "" });
+  const [formState, setFormState] = useState({ name: "", email: "", type: "commission", message: "", budget: "" });
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const handleChange = (e) => setFormState(p => ({ ...p, [e.target.name]: e.target.value }));
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formState._gotcha) return; // honeypot
     if (!formState.name || !formState.email || !formState.message) { setError("Please fill in all required fields."); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formState.email)) { setError("Please enter a valid email address."); return; }
     setError("");
     setSending(true);
     try {
-      const formData = new FormData();
-      formData.append("name", formState.name);
-      formData.append("email", formState.email);
-      formData.append("_replyto", formState.email);
-      formData.append("inquiryType", formState.type);
-      formData.append("budget", formState.budget || "Not specified");
-      formData.append("message", formState.message);
-      formData.append("_subject", `OEVER.ART Inquiry: ${formState.type} from ${formState.name}`);
-      const res = await fetch("https://formspree.io/f/xqedalrr", {
+      const body = new URLSearchParams({
+        "form-name": "contact",
+        name: formState.name,
+        email: formState.email,
+        type: formState.type,
+        budget: formState.budget || "Not specified",
+        message: formState.message,
+      });
+      const res = await fetch("/", {
         method: "POST",
-        headers: { "Accept": "application/json" },
-        body: formData,
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: body.toString(),
       });
       if (res.ok) { setSubmitted(true); }
-      else { const data = await res.json(); setError(data?.errors?.[0]?.message || "Something went wrong. Please email floris@oever.art directly."); }
+      else { setError("Something went wrong. Please email floris@oever.art directly."); }
     } catch (err) {
       setError("Network error. Please email floris@oever.art directly.");
     } finally { setSending(false); }
@@ -675,11 +674,12 @@ function Contact() {
             </div>
           ) : (
             <div style={{ marginTop: "40px" }}>
-              <form onSubmit={handleSubmit} action="https://formspree.io/f/xqedalrr" method="POST" acceptCharset="UTF-8" style={{ display: "flex", flexDirection: "column", gap: "24px" }} noValidate>
-                {/* Honeypot anti-spam — hidden from humans */}
+              <form onSubmit={handleSubmit} name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" style={{ display: "flex", flexDirection: "column", gap: "24px" }} noValidate>
+                <input type="hidden" name="form-name" value="contact" />
+                {/* Netlify honeypot anti-spam — hidden from humans */}
                 <div style={{ position: "absolute", left: "-9999px" }} aria-hidden="true">
-                  <label htmlFor="_gotcha">Do not fill this</label>
-                  <input id="_gotcha" name="_gotcha" type="text" tabIndex={-1} autoComplete="off" value={formState._gotcha} onChange={handleChange} />
+                  <label htmlFor="bot-field">Do not fill this</label>
+                  <input id="bot-field" name="bot-field" type="text" tabIndex={-1} autoComplete="off" />
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }} className="form-grid">
                   <div>
