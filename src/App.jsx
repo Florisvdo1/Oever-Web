@@ -18,20 +18,20 @@ const tokens = {
   accent: "#D4503A",
 };
 
-// ─── WADM Artwork Data (rights-safe: titles + links only, no image hotlinking) ───
+// ─── WADM Artwork Data (preview images from WADM og:image thumbnails) ───
 const wadmArtworks = [
-  { id: "694349", title: "Meisje met bloemen", desc: "Young woman wearing a crown of flowers with a bird on her hand", collections: ["Flowers", "Portrait", "Birds"], price: "from €114" },
-  { id: "864691", title: "Het meisje met de fijnste kleuren", desc: "Portrait of a girl from Amsterdam in vibrant fine-art colors", collections: ["Portrait", "Digital Art", "Color"], price: "from €130" },
-  { id: "826273", title: "Portret van een man", desc: "The tree man — where classic and digital converge with nature", collections: ["Collage", "Nature", "Portrait"], price: "from €112" },
-  { id: "857847", title: "Meisje met de vlinders", desc: "Ethereal portrait surrounded by delicate butterflies", collections: ["Butterflies", "Portrait", "Fine-art"], price: "from €130" },
-  { id: "858102", title: "Vrouw met rode bloemen", desc: "Woman adorned with striking red florals in a painterly composition", collections: ["Flowers", "Portrait", "Red"], price: "from €147" },
-  { id: "863445", title: "Het meisje met de krullen", desc: "Captivating portrait featuring flowing curls and warm tones", collections: ["Portrait", "Warm", "Modern"], price: "from €158" },
-  { id: "865201", title: "Meisje in het blauw", desc: "Serene portrait bathed in cool blue hues and soft light", collections: ["Portrait", "Blue", "Serene"], price: "from €156" },
-  { id: "860788", title: "De vrouw met de gouden oorbel", desc: "A modern homage to the Dutch Masters — gold, light, and grace", collections: ["Portrait", "Gold", "Classic"], price: "from €174" },
-  { id: "859932", title: "Botanisch meisje", desc: "Where feminine beauty and botanical wonder intertwine", collections: ["Botanical", "Portrait", "Nature"], price: "from €180" },
-  { id: "861444", title: "Vrouw met de paarse bloemen", desc: "Rich purple florals frame a contemplative feminine portrait", collections: ["Flowers", "Purple", "Portrait"], price: "from €199" },
-  { id: "862001", title: "Het meisje met de rozen", desc: "Roses cascade around a delicate, ethereal figure", collections: ["Roses", "Portrait", "Romantic"], price: "from €148" },
-  { id: "863999", title: "Zelfportret met vlinders", desc: "Self-portrait interlaced with butterfly motifs", collections: ["Butterflies", "Self-portrait", "Digital Art"], price: "from €136" },
+  { id: "694349", title: "Meisje met bloemen", desc: "Young woman wearing a crown of flowers with a bird on her hand", collections: ["Flowers", "Portrait", "Birds"], price: "from €114", imageUrl: "https://cdn-thumbs.ohmyprints.net/1/ff1e851e772a31c67d4d7c670ec240cb/817x600/dynamic-size/fit/e4e62f2e1ad92cbf297b89f200eb8cc0af14817238537dc1c4211998588236f8.jpg" },
+  { id: "864691", title: "Het meisje met de fijnste kleuren", desc: "Portrait of a girl from Amsterdam in vibrant fine-art colors", collections: ["Portrait", "Digital Art", "Color"], price: "from €130", imageUrl: "https://cdn-thumbs.ohmyprints.net/1/df2f8f1edab56db54649963b8a4be320/817x600/thumbnail/fit.jpg" },
+  { id: "826273", title: "Portret van een man", desc: "The tree man — where classic and digital converge with nature", collections: ["Collage", "Nature", "Portrait"], price: "from €112", imageUrl: "https://cdn-thumbs.ohmyprints.net/1/06bd63fd1d396daab5c277ca87c6bb5a/817x600/thumbnail/fit.jpg" },
+  { id: "857847", title: "Meisje met de vlinders", desc: "Ethereal portrait surrounded by delicate butterflies", collections: ["Butterflies", "Portrait", "Fine-art"], price: "from €130", imageUrl: "https://cdn-thumbs.ohmyprints.net/1/7712504bc953c3a30986dacb7baa471a/817x600/thumbnail/fit.jpg" },
+  { id: "858102", title: "Vrouw met rode bloemen", desc: "Woman adorned with striking red florals in a painterly composition", collections: ["Flowers", "Portrait", "Red"], price: "from €147", imageUrl: "https://cdn-thumbs.ohmyprints.net/1/9a1f67c522da78cb4d2b7893eaad8aba/817x600/dynamic-size/fit/5d44aa392fc1de509c409d2c53b607c5e0d3d39677e68690c864b31ff077a794.jpg" },
+  { id: "863445", title: "Het meisje met de krullen", desc: "Captivating portrait featuring flowing curls and warm tones", collections: ["Portrait", "Warm", "Modern"], price: "from €158", imageUrl: "https://cdn-thumbs.ohmyprints.net/1/418d39b9634d42a72185bddcd0a27488/817x600/thumbnail/fit.jpg" },
+  { id: "865201", title: "Meisje in het blauw", desc: "Serene portrait bathed in cool blue hues and soft light", collections: ["Portrait", "Blue", "Serene"], price: "from €156", imageUrl: "https://cdn-thumbs.ohmyprints.net/1/5daadeb37acd4787cb6617647fe78493/817x600/thumbnail/fit.jpg" },
+  { id: "860788", title: "De vrouw met de gouden oorbel", desc: "A modern homage to the Dutch Masters — gold, light, and grace", collections: ["Portrait", "Gold", "Classic"], price: "from €174", imageUrl: "https://cdn-thumbs.ohmyprints.net/1/d16d2fba4d1b1504dd1e4535d1237878/817x600/dynamic-size/fit/a5e805ae3fdb14a1fbc36d4042ffcd655b9b76d8526822441928fbcce2728363.jpg" },
+  { id: "859932", title: "Botanisch meisje", desc: "Where feminine beauty and botanical wonder intertwine", collections: ["Botanical", "Portrait", "Nature"], price: "from €180", imageUrl: "https://cdn-thumbs.ohmyprints.net/1/029e6377921d710b583636393e8a7cda/817x600/dynamic-size/fit/ee1cb6e6535515c22863b9ac3e3eef6f90c9efbf6f330f3ff576642c86d01d29.jpg" },
+  { id: "861444", title: "Vrouw met de paarse bloemen", desc: "Rich purple florals frame a contemplative feminine portrait", collections: ["Flowers", "Purple", "Portrait"], price: "from €199", imageUrl: "https://cdn-thumbs.ohmyprints.net/1/959a1e07e033529de5ece59fea604cd2/817x600/thumbnail/fit.jpg" },
+  { id: "862001", title: "Het meisje met de rozen", desc: "Roses cascade around a delicate, ethereal figure", collections: ["Roses", "Portrait", "Romantic"], price: "from €148", imageUrl: "https://cdn-thumbs.ohmyprints.net/1/6cf13f80567ad957edd7dc2f1ab21cdc/817x600/thumbnail/fit.jpg" },
+  { id: "863999", title: "Zelfportret met vlinders", desc: "Self-portrait interlaced with butterfly motifs", collections: ["Butterflies", "Self-portrait", "Digital Art"], price: "from €136", imageUrl: "https://cdn-thumbs.ohmyprints.net/1/92707cbd84d6187a2496b20d488517db/817x600/dynamic-size/fit/d8d9c1303a4b78fa168eae57dc04303632d1f046dc4db1c56983cce7fc90f4b3.jpg" },
 ];
 
 const commissionSteps = [
@@ -352,7 +352,7 @@ function Collection() {
                   background: tokens.bgCard, border: `1px solid ${tokens.border}`, padding: "0", overflow: "hidden",
                   transition: "all 0.4s cubic-bezier(0.22,1,0.36,1)", cursor: "pointer", position: "relative",
                 }}>
-                  {/* Decorative top — abstract color bar inspired by Dutch palette */}
+                  {/* Artwork preview with gradient fallback */}
                   <div style={{
                     height: "200px", position: "relative", overflow: "hidden",
                     background: `linear-gradient(135deg,
@@ -360,10 +360,23 @@ function Collection() {
                       hsl(${(parseInt(art.id) * 7) % 360}, 25%, 16%) 50%,
                       hsl(${(parseInt(art.id) * 13) % 360}, 18%, 10%) 100%)`,
                   }}>
-                    {/* Abstract art placeholder with monogram */}
+                    {art.imageUrl && (
+                      <img
+                        src={art.imageUrl}
+                        alt={art.title}
+                        loading="lazy"
+                        decoding="async"
+                        width="817"
+                        height="600"
+                        onError={(e) => { e.target.style.display = "none"; }}
+                        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }}
+                      />
+                    )}
+                    {/* Overlay: monogram square + "VIEW ON WADM" */}
                     <div style={{
                       position: "absolute", inset: 0, display: "flex", flexDirection: "column",
-                      alignItems: "center", justifyContent: "center", gap: "12px",
+                      alignItems: "center", justifyContent: "center", gap: "12px", zIndex: 2,
+                      background: "rgba(0,0,0,0.35)",
                     }}>
                       <div style={{
                         width: "64px", height: "64px", border: `1px solid ${tokens.goldDim}`,
@@ -379,7 +392,7 @@ function Collection() {
                       }}>View on WADM</span>
                     </div>
                     {/* Subtle noise texture overlay */}
-                    <div style={{ position: "absolute", inset: 0, opacity: 0.3, background: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.4'/%3E%3C/svg%3E\")" }} />
+                    <div style={{ position: "absolute", inset: 0, opacity: 0.3, zIndex: 1, background: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.4'/%3E%3C/svg%3E\")" }} />
                   </div>
 
                   <div style={{ padding: "24px" }}>
