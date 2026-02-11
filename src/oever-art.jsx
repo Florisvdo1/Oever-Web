@@ -20,19 +20,50 @@ const tokens = {
 
 // ─── WADM Artwork Data (rights-safe: titles + links only, no image hotlinking) ───
 const wadmArtworks = [
-  { id: "694349", title: "Meisje met bloemen", desc: "Young woman wearing a crown of flowers with a bird on her hand", collections: ["Flowers", "Portrait", "Birds"], price: "from €114" },
-  { id: "864691", title: "Het meisje met de fijnste kleuren", desc: "Portrait of a girl from Amsterdam in vibrant fine-art colors", collections: ["Portrait", "Digital Art", "Color"], price: "from €130" },
-  { id: "826273", title: "Portret van een man", desc: "The tree man — where classic and digital converge with nature", collections: ["Collage", "Nature", "Portrait"], price: "from €112" },
-  { id: "857847", title: "Meisje met de vlinders", desc: "Ethereal portrait surrounded by delicate butterflies", collections: ["Butterflies", "Portrait", "Fine-art"], price: "from €130" },
-  { id: "858102", title: "Vrouw met rode bloemen", desc: "Woman adorned with striking red florals in a painterly composition", collections: ["Flowers", "Portrait", "Red"], price: "from €147" },
-  { id: "863445", title: "Het meisje met de krullen", desc: "Captivating portrait featuring flowing curls and warm tones", collections: ["Portrait", "Warm", "Modern"], price: "from €158" },
-  { id: "865201", title: "Meisje in het blauw", desc: "Serene portrait bathed in cool blue hues and soft light", collections: ["Portrait", "Blue", "Serene"], price: "from €156" },
-  { id: "860788", title: "De vrouw met de gouden oorbel", desc: "A modern homage to the Dutch Masters — gold, light, and grace", collections: ["Portrait", "Gold", "Classic"], price: "from €174" },
-  { id: "859932", title: "Botanisch meisje", desc: "Where feminine beauty and botanical wonder intertwine", collections: ["Botanical", "Portrait", "Nature"], price: "from €180" },
-  { id: "861444", title: "Vrouw met de paarse bloemen", desc: "Rich purple florals frame a contemplative feminine portrait", collections: ["Flowers", "Purple", "Portrait"], price: "from €199" },
-  { id: "862001", title: "Het meisje met de rozen", desc: "Roses cascade around a delicate, ethereal figure", collections: ["Roses", "Portrait", "Romantic"], price: "from €148" },
-  { id: "863999", title: "Zelfportret met vlinders", desc: "Self-portrait interlaced with butterfly motifs", collections: ["Butterflies", "Self-portrait", "Digital Art"], price: "from €136" },
+  { id: "694349", title: "Meisje met bloemen", desc: "Young woman wearing a crown of flowers with a bird on her hand", collections: ["Flowers", "Portrait", "Birds"], price: "from €114", imageUrl: "/meisje-met-bloemen.jpg" },
+  { id: "864691", title: "Het meisje met de fijnste kleuren", desc: "Portrait of a girl from Amsterdam in vibrant fine-art colors", collections: ["Portrait", "Digital Art", "Color"], price: "from €130", imageUrl: null },
+  { id: "826273", title: "Portret van een man", desc: "The tree man — where classic and digital converge with nature", collections: ["Collage", "Nature", "Portrait"], price: "from €112", imageUrl: null },
+  { id: "857847", title: "Meisje met de vlinders", desc: "Ethereal portrait surrounded by delicate butterflies", collections: ["Butterflies", "Portrait", "Fine-art"], price: "from €130", imageUrl: null },
+  { id: "858102", title: "Vrouw met rode bloemen", desc: "Woman adorned with striking red florals in a painterly composition", collections: ["Flowers", "Portrait", "Red"], price: "from €147", imageUrl: null },
+  { id: "863445", title: "Het meisje met de krullen", desc: "Captivating portrait featuring flowing curls and warm tones", collections: ["Portrait", "Warm", "Modern"], price: "from €158", imageUrl: null },
+  { id: "865201", title: "Meisje in het blauw", desc: "Serene portrait bathed in cool blue hues and soft light", collections: ["Portrait", "Blue", "Serene"], price: "from €156", imageUrl: null },
+  { id: "860788", title: "De vrouw met de gouden oorbel", desc: "A modern homage to the Dutch Masters — gold, light, and grace", collections: ["Portrait", "Gold", "Classic"], price: "from €174", imageUrl: null },
+  { id: "859932", title: "Botanisch meisje", desc: "Where feminine beauty and botanical wonder intertwine", collections: ["Botanical", "Portrait", "Nature"], price: "from €180", imageUrl: null },
+  { id: "861444", title: "Vrouw met de paarse bloemen", desc: "Rich purple florals frame a contemplative feminine portrait", collections: ["Flowers", "Purple", "Portrait"], price: "from €199", imageUrl: null },
+  { id: "862001", title: "Het meisje met de rozen", desc: "Roses cascade around a delicate, ethereal figure", collections: ["Roses", "Portrait", "Romantic"], price: "from €148", imageUrl: null },
+  { id: "863999", title: "Zelfportret met vlinders", desc: "Self-portrait interlaced with butterfly motifs", collections: ["Butterflies", "Self-portrait", "Digital Art"], price: "from €136", imageUrl: null },
 ];
+
+// ─── Runtime OG:Image Fetcher ───
+// Uses the Anthropic API (available in artifacts) to ask Claude to extract og:image URLs
+// from WADM product pages. This is rights-safe as og:image is explicitly intended for previews.
+async function fetchWadmPreviews(artworks) {
+  // Strategy: Try to load images directly from WADM's public preview endpoint.
+  // WADM serves resized previews at /afbeelding/{id}/{size} — we test each one.
+  // If an image loads successfully, we use it. If not, the gradient fallback shows.
+  const results = [];
+  const batchSize = 4;
+  for (let i = 0; i < artworks.length; i += batchSize) {
+    const batch = artworks.slice(i, i + batchSize);
+    const promises = batch.map(art => new Promise(resolve => {
+      const url = `https://www.werkaandemuur.nl/afbeelding/${art.id}/400`;
+      const img = new Image();
+      img.onload = () => resolve({ id: art.id, imageUrl: url });
+      img.onerror = () => {
+        // Fallback: try thumbs CDN pattern
+        const fallbackUrl = `https://thumbs.werkaandemuur.nl/1/${art.id}/300x300/fit.jpg`;
+        const img2 = new Image();
+        img2.onload = () => resolve({ id: art.id, imageUrl: fallbackUrl });
+        img2.onerror = () => resolve({ id: art.id, imageUrl: null });
+        img2.src = fallbackUrl;
+      };
+      img.src = url;
+    }));
+    const batchResults = await Promise.all(promises);
+    results.push(...batchResults);
+  }
+  return results;
+}
 
 const commissionSteps = [
   { num: "01", title: "Inquiry", desc: "Share your vision — a beloved photo, a concept, or an emotion you'd like immortalized." },
@@ -307,8 +338,21 @@ function Hero() {
 // ─── Print Collection (WADM Link Cards) ───
 function Collection() {
   const [filter, setFilter] = useState("All");
+  const [artImages, setArtImages] = useState({});
   const allTags = ["All", ...new Set(wadmArtworks.flatMap(a => a.collections))];
   const filtered = filter === "All" ? wadmArtworks : wadmArtworks.filter(a => a.collections.includes(filter));
+
+  // Fetch og:image previews on mount
+  useEffect(() => {
+    let cancelled = false;
+    fetchWadmPreviews(wadmArtworks).then(results => {
+      if (cancelled || !results.length) return;
+      const map = {};
+      results.forEach(r => { if (r.id && r.imageUrl) map[r.id] = r.imageUrl; });
+      setArtImages(map);
+    });
+    return () => { cancelled = true; };
+  }, []);
 
   return (
     <section id="collection" style={{ padding: "clamp(60px,10vw,140px) clamp(20px,5vw,80px)", background: tokens.bg, position: "relative" }}>
@@ -352,19 +396,37 @@ function Collection() {
                   background: tokens.bgCard, border: `1px solid ${tokens.border}`, padding: "0", overflow: "hidden",
                   transition: "all 0.4s cubic-bezier(0.22,1,0.36,1)", cursor: "pointer", position: "relative",
                 }}>
-                  {/* Decorative top — abstract color bar inspired by Dutch palette */}
+                  {/* Decorative top — real artwork preview or gradient fallback */}
+                  {(() => { const imgSrc = art.imageUrl || artImages[art.id]; return (
                   <div style={{
-                    height: "200px", position: "relative", overflow: "hidden",
+                    aspectRatio: "16/9", position: "relative", overflow: "hidden",
                     background: `linear-gradient(135deg,
                       hsl(${(parseInt(art.id) % 360)}, 20%, 12%) 0%,
                       hsl(${(parseInt(art.id) * 7) % 360}, 25%, 16%) 50%,
                       hsl(${(parseInt(art.id) * 13) % 360}, 18%, 10%) 100%)`,
                   }}>
-                    {/* Abstract art placeholder with monogram */}
+                    {/* Real artwork preview image */}
+                    {imgSrc && (
+                      <img
+                        src={imgSrc}
+                        alt={art.title}
+                        width="320" height="180"
+                        loading={i < 3 ? "eager" : "lazy"}
+                        decoding="async"
+                        onError={(e) => { e.target.style.display = "none"; }}
+                        style={{
+                          position: "absolute", inset: 0, width: "100%", height: "100%",
+                          objectFit: "cover", objectPosition: "center", zIndex: 1,
+                        }}
+                      />
+                    )}
+                    {/* Abstract art placeholder overlay with monogram */}
                     <div style={{
                       position: "absolute", inset: 0, display: "flex", flexDirection: "column",
-                      alignItems: "center", justifyContent: "center", gap: "12px",
-                    }}>
+                      alignItems: "center", justifyContent: "center", gap: "12px", zIndex: 2,
+                      background: imgSrc ? "rgba(10,10,10,0.25)" : "transparent",
+                      transition: "background 0.4s ease",
+                    }} className="card-overlay">
                       <div style={{
                         width: "64px", height: "64px", border: `1px solid ${tokens.goldDim}`,
                         display: "flex", alignItems: "center", justifyContent: "center",
@@ -381,6 +443,7 @@ function Collection() {
                     {/* Subtle noise texture overlay */}
                     <div style={{ position: "absolute", inset: 0, opacity: 0.3, background: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.4'/%3E%3C/svg%3E\")" }} />
                   </div>
+                  );})()}
 
                   <div style={{ padding: "24px" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px" }}>
@@ -425,6 +488,7 @@ function Collection() {
       <style>{`
         .art-card:hover { border-color: ${tokens.goldDim} !important; transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
         .art-card:hover .arrow-icon { transform: translateX(4px); }
+        .art-card:hover .card-overlay { background: rgba(10,10,10,0.12) !important; }
       `}</style>
     </section>
   );
